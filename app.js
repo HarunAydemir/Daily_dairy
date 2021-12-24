@@ -4,7 +4,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const ejs = require("ejs");
 const _ = require("lodash");
-
+const mongoose = require("mongoose")
 
 const aboutContent = "Hac habitasse platea dictumst vestibulum rhoncus est pellentesque. " +
   "Dictumst vestibulum rhoncus est pellentesque elit ullamcorper. Non diam phasellus vestibulum" +
@@ -22,14 +22,52 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(express.static("public"));
 
-let posts = [];
+mongoose.connect("mongodb://127.0.0.1/blogDB");
 
+const postschema = {
+  title: String,
+  content: String
+};
+
+const Post = mongoose.model("Post", postschema);
 
 app.get("/", function (req, res) {
+  Post.find({}, function (err, posts) {
+    res.render("home", {
+      posts: posts
+    });
+  });
+});
 
-  Posts = posts;
-  res.render("home");
+app.get("/compose", function (req, res) {
+  res.render("compose");
+});
 
+app.post("/compose", function (req, res) {
+  const post = new Post({
+    title: req.body.Titlecontent,
+    content: req.body.Postcontent
+  });
+
+  post.save(function (err) {
+    if (!err) {
+      res.redirect("/");
+    }
+  });
+});
+
+app.get('/posts/:postId', function (req, res) {
+
+  const requestPostId = req.params.postId;
+
+  Post.findOne({
+    _id: requestPostId
+  }, function (err, post) {
+    res.render("post", {
+      titlePost: post.title,
+      pagePost: post.content
+    });
+  });
 });
 
 app.get("/contact", function (req, res) {
@@ -43,45 +81,6 @@ app.get("/about", function (req, res) {
 
   Aboutcontent = aboutContent;
   res.render("about");
-
-});
-
-
-app.get("/compose", function (req, res) {
-
-  res.render("compose");
-
-});
-
-
-
-app.get('/posts/:postname', function (req, res) {
-
-  const requestPost = _.lowerCase(req.params.postname);
-
-  posts.forEach(post => {
-    const storedtitle = _.lowerCase(post.title);
-
-    if (requestPost === storedtitle) {
-      titlePost = post.title;
-      pagePost = post.content;
-
-      res.render("post");
-    }
-  })
-});
-
-app.post("/compose", function (req, res) {
-
-
-
-  const post = {
-    title: req.body.Titlecontent,
-    content: req.body.Postcontent
-  };
-
-  posts.push(post);
-  res.redirect("/");
 
 });
 

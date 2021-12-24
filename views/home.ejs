@@ -1,29 +1,23 @@
 <%- include("partials/header") %>
     <div class="container ">
-        <% if (Posts==[]) {%>
+        <% if (posts==[]) {%>
             <div class="card" data-tilt>
                 <div class="content">
                     <p>Seems like empty.You want to fill with your daily experiences?</p>
                     <a href="/compose">Compose</a>
                 </div>
             </div>
-
             <% } else { %>
-
-                <% Posts.forEach(post=> { %>
+                <% posts.forEach(post=> { %>
                     <div class="card" data-tilt data-tilt-glare data-tilt-max-glare="0.8">
                         <div class="content">
-
-
                             <h2>
                                 <%=post.title %>
                             </h2>
-
                             <p>
                                 <%= post.content.substring(0,100)+"..."%>
-
                             </p>
-                            <a href="posts/<%=post.title%>">Readmore</a>
+                            <a href="posts/<%=post._id%>">Readmore</a>
                         </div>
                     </div>
                     <% }); %>
@@ -34,9 +28,5 @@
                             </div>
                         </div>
                         <% };%>
-
-
-
     </div>
-
     <%- include("partials/footer") %>
